@@ -7,23 +7,29 @@ import (
 	logger "baseTemp/common/logger"
 	"baseTemp/common/mq"
 	"baseTemp/service"
+	"baseTemp/tools"
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
+
 func main() {
 	time.LoadLocation("Asia/Shanghai")
-	if(cmd.ParseArgs()){
+	if cmd.ParseArgs() {
 		return
 	}
-	config.InitConfig(*cmd.ConfigPath)
-	
+
 	if config.Conf().Mode == "release" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	logger.InitLog(config.Conf().Mode)
-	mq.OnRabbitMqInit=func() {
+	mq.OnRabbitMqInit = func() {
 
 	}
 	mq.InitRabbitMQ()
@@ -31,9 +37,6 @@ func main() {
 	db.Initgorm()
 	db.MigrateTable()
 	router := gin.Default()
-	// 创建会话存储
-	// store := cookie.NewStore([]byte("secret")) // 这里的 "secret" 应该是一个安全的密钥
-	// router.Use(sessions.Sessions("session", store))
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"}, // 允许所有源
 		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
@@ -42,5 +45,21 @@ func main() {
 		AllowCredentials: true,
 	}))
 	service.InitChiTongDaService(router)
+
+	tools.AddOnStopSignal(func() {
+		fmt.Println("stop")
+	})
+	listenerSignal()
 	router.Run(":" + *cmd.Port)
+}
+
+func listenerSignal() {
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-signalChan
+		tools.StopSingalHandler()
+		mq.CloseRabbitMQ()
+		os.Exit(0)
+	}()
 }

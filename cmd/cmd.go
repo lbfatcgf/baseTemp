@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"baseTemp/common/config"
 	"flag"
 	"fmt"
 )
@@ -18,6 +19,7 @@ func ParseArgs() bool {
 	ConfigPath = configPath
 	Port = port
 	Version = vseions
+	config.InitConfig(*ConfigPath)
 	if(*Version){
 		fmt.Println("0.0.1")
 		return true

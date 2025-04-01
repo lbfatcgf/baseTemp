@@ -33,5 +33,5 @@ go.work.sum
 build/
 */dist/
 */bin/
-
+logs/
 vendor/

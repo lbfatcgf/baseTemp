@@ -1,10 +1,17 @@
 name: baseTempatch
-version: 0.0.3
+version: 0.0.1
 mode: dev
-# rabbitmq:
-#   host: dev.lbfatcgf.top:5672
-#   user: guest
-#   password: guest
+rabbitmq:
+  host: dev.lbfatcgf.top:5673
+  user: guest
+  password: guest
+  node:
+    - host: dev.lbfatcgf.top:5674
+      user: guest
+      password: guest
+    - host: dev.lbfatcgf.top:5675
+      user: guest
+      password: guest
 # pgsql: 
 #   host : dev.lbfatcgf.top 
 #   user : postgres 
@@ -17,5 +24,5 @@ mode: dev
 
 # log_dir: /app/logs
 # log_dir: D:/mytemp/logs
-log_dir: C:\Users\lbfatcgf\work\code\temp\logs
+# log_dir: C:\Users\lbfatcgf\work\code\temp\logs
 
