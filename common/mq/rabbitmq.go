@@ -13,60 +13,59 @@ var rabbitMq = make(map[string]*rbmq.Connection)
 
 var sendChannel = make(map[string]*rbmq.Channel)
 var channelNames = make([]string, 0)
+
+// OnRabbitMqInit 回调函数，在初始化rabbitMq连接后时调用
 var OnRabbitMqInit func() = func() {}
 
+// currentChannel 当前使用的channel
 var currentChannel int = 0
+
+// consumeMsgChan 消费消息通道
 var consumeMsgChan = make(map[string]chan rbmq.Delivery)
 
+// consumeCtx 消费上下文
 var consumeCtx = make(map[string]context.CancelFunc)
 
+// InitRabbitMQ 初始化rabbitMq连接
 func InitRabbitMQ() {
-	if config.Conf().RabbitMQ == nil {
+	if config.Conf().RabbitMQ == nil || len(*config.Conf().RabbitMQ) == 0 {
 		return
 	}
-	parentLink := config.Conf().RabbitMQ.GetLink()
-	conn, err := rbmq.Dial(parentLink)
-	if err != nil {
-		logger.LogError("RabbitMQ connect error: %v", err)
-		panic(err)
-	}
-	sc, err := conn.Channel()
-	if err != nil {
-		logger.LogError("RabbitMQ create send channel error: %v", err)
-		panic(err)
-	}
-	channelNames = append(channelNames, config.Conf().RabbitMQ.Host+config.Conf().RabbitMQ.User)
-	rabbitMq[config.Conf().RabbitMQ.Host+config.Conf().RabbitMQ.User] = conn
-	sendChannel[config.Conf().RabbitMQ.Host+config.Conf().RabbitMQ.User] = sc
-	logger.LogInfo(fmt.Sprintf("RabbitMQ %s connect success", config.Conf().RabbitMQ.Host))
+
 	connNode()
 
 	OnRabbitMqInit()
 }
 
+// connNode 获取rabbitMq连接
 func connNode() {
-	if config.Conf().RabbitMQ.Node != nil && len(*config.Conf().RabbitMQ.Node) > 0 {
-		for _, node := range *config.Conf().RabbitMQ.Node {
-			nodeLink := node.GetLink()
-			nodeConn, err := rbmq.Dial(nodeLink)
-			if err != nil {
-				logger.LogError("RabbitMQ connect error: %v", err)
-				continue
-			}
-			nodeSc, err := nodeConn.Channel()
-			if err != nil {
-				logger.LogError("RabbitMQ create send channel error: %v", err)
-				continue
-			}
-			logger.LogInfo(fmt.Sprintf("RabbitMQ %s connect success", node.Host))
-			channelNames = append(channelNames, node.Host+node.User)
-			rabbitMq[node.Host+node.User] = nodeConn
-			sendChannel[node.Host+node.User] = nodeSc
+	connCount := 0
+	for _, node := range *config.Conf().RabbitMQ {
+		nodeLink := node.GetLink()
+		nodeConn, err := rbmq.Dial(nodeLink)
+		if err != nil {
+			logger.LogError("RabbitMQ connect error: %v", err)
+			continue
 		}
+		nodeSc, err := nodeConn.Channel()
+		if err != nil {
+			logger.LogError("RabbitMQ create send channel error: %v", err)
+			continue
+		}
+		connCount++
+		logger.LogInfo(fmt.Sprintf("RabbitMQ %s connect success", node.Host))
+		channelNames = append(channelNames, node.Host+node.User)
+		rabbitMq[node.Host+node.User] = nodeConn
+		sendChannel[node.Host+node.User] = nodeSc
+	}
+	if connCount == 0 {
+		panic("RabbitMQ connect error")
 	}
 }
 
+// CloseRabbitMQ 关闭rabbitMq连接
 func CloseRabbitMQ() {
+
 	for _, conn := range rabbitMq {
 		conn.Close()
 	}
@@ -84,6 +83,8 @@ func CloseRabbitMQ() {
 	}
 }
 
+
+// SetRouteQueue 设置队列绑定关系
 func SetRouteQueue(exchange, routingKey, queueName string) error {
 	var channel *rbmq.Channel
 	for _, sc := range sendChannel {
@@ -121,6 +122,7 @@ func SetRouteQueue(exchange, routingKey, queueName string) error {
 	return nil
 }
 
+// NextChannel 获取下一个channel
 func NextChannel() (*rbmq.Channel, error) {
 	if len(channelNames) != len(rabbitMq) || len(channelNames) != len(sendChannel) {
 
@@ -152,13 +154,21 @@ func NextChannel() (*rbmq.Channel, error) {
 	currentChannel++
 	return next, nil
 }
-func SetQueue(queueName string) (*rbmq.Queue, error) {
+
+// SetQueueDefault 设置默认队列
+
+func SetQueueDefault(queueName string) (*rbmq.Queue, error) {
+	return SetQueue(queueName, true, false, false, false, nil)
+}
+
+// SetQueue 设置队列
+func SetQueue(queueName string, durable bool, autoDelete bool, exclusive bool, noWait bool, args rbmq.Table) (*rbmq.Queue, error) {
 	channel, err := NextChannel()
 	if err != nil {
 		return nil, err
 	}
 
-	q, err := channel.QueueDeclare(queueName, true, false, false, false, nil)
+	q, err := channel.QueueDeclare(queueName, true, false, false, false, args)
 	if err != nil {
 		logger.LogError("RabbitMQ declare queue error: %v", err)
 		return nil, err
@@ -167,6 +177,7 @@ func SetQueue(queueName string) (*rbmq.Queue, error) {
 	return &q, nil
 }
 
+// SendMsg 发送消息
 func SendMsg(q *rbmq.Queue, msg []byte) error {
 	channel, err := NextChannel()
 	if err != nil {
@@ -178,6 +189,7 @@ func SendMsg(q *rbmq.Queue, msg []byte) error {
 	})
 }
 
+// SendMsgToExchange 发送消息到exchange
 func SendMsgToExchange(exchange, routingKey string, msg []byte) error {
 	channel, err := NextChannel()
 	if err != nil {
@@ -195,6 +207,7 @@ func SendMsgToExchange(exchange, routingKey string, msg []byte) error {
 	)
 }
 
+// StopConsumeMsg 停止消费消息
 func StopConsumeMsg(queue string) {
 	if cancel, ok := consumeCtx[queue]; ok {
 		cancel()
@@ -202,6 +215,7 @@ func StopConsumeMsg(queue string) {
 	delete(consumeCtx, queue)
 }
 
+// ConsumeMsg 开始消费消息
 func ConsumeMsg(ctx context.Context, queue string, consumer string, autoAck bool, exclusive bool, noLocal bool, noWait bool, args rbmq.Table) <-chan rbmq.Delivery {
 	allChan := make(chan rbmq.Delivery, 1000)
 	consumeMsgChan[queue] = allChan
@@ -221,7 +235,11 @@ func ConsumeMsg(ctx context.Context, queue string, consumer string, autoAck bool
 			}
 			msg, err := ch.ConsumeWithContext(ctx, queue, consumer, autoAck, exclusive, noLocal, noWait, args)
 			if err != nil {
+				logger.LogDebug("RabbitMQ consume error: %v", err)
 				continue
+			}
+			if config.Conf().Mode !="release"{
+				logger.LogDebug("RabbitMQ consume msg: %v",channelNames[currentChannel])
 			}
 			for {
 				if qch[queue] == nil {
@@ -230,6 +248,9 @@ func ConsumeMsg(ctx context.Context, queue string, consumer string, autoAck bool
 				}
 				m, ok := <-msg
 				if !ok {
+					if config.Conf().Mode !="release"{
+						logger.LogDebug("RabbitMQ consume channel closed")
+					}
 					break
 				}
 				allChan <- m

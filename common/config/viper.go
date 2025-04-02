@@ -7,6 +7,7 @@ import (
 )
 
 var appConfig config.AppConfig
+var configReader *viper.Viper
 
 func Conf() *config.AppConfig {
 	// fmt.Printf("config: %v\n", AppConfig)
@@ -15,10 +16,11 @@ func Conf() *config.AppConfig {
 
 func InitConfig(confPath string) {
 	v := viper.New()
-	v.SetConfigName("conf")
-	v.AddConfigPath(confPath)
-	v.SetConfigType("yaml")
-	err := v.ReadInConfig()
+	configReader = v
+	configReader.SetConfigName("conf")
+	configReader.AddConfigPath(confPath)
+	configReader.SetConfigType("yaml")
+	err := configReader.ReadInConfig()
 	if err != nil {
 		panic(err)
 	}
@@ -26,11 +28,15 @@ func InitConfig(confPath string) {
 	// 	fmt.Println(v.Get(ak))
 	// }
 
-	err = v.Unmarshal(&appConfig)
+	err = configReader.Unmarshal(&appConfig)
 
 	if err != nil {
 		panic(err)
 	}
 
 	// fmt.Printf("config: %v\n", AppConfig)
+}
+
+func GetExpendConf(key string) any {
+	return configReader.Get(key)
 }

@@ -2,27 +2,30 @@ name: baseTempatch
 version: 0.0.1
 mode: dev
 rabbitmq:
-  host: dev.lbfatcgf.top:5673
-  user: guest
-  password: guest
-  node:
+    - host: dev.lbfatcgf.top:5673
+      user: guest
+      password: guest
+    
     - host: dev.lbfatcgf.top:5674
       user: guest
       password: guest
     - host: dev.lbfatcgf.top:5675
       user: guest
       password: guest
-# pgsql: 
-#   host : dev.lbfatcgf.top 
-#   user : postgres 
-#   password : 123456 
-#   dbname : zga
-#   port : 5432 
-#   sslmode : disable 
-#   timeZone : Asia/Shanghai
+pgsql: 
+  - host : dev.lbfatcgf.top 
+    user : postgres 
+    password : 123456 
+    dbname : zga
+    port : 5432 
+    sslmode : disable 
+    timeZone : Asia/Shanghai
+    primary: true # 主库
 
 
 # log_dir: /app/logs
 # log_dir: D:/mytemp/logs
 # log_dir: C:\Users\lbfatcgf\work\code\temp\logs
 
+fuk: 
+  - name: fuk1

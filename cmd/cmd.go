@@ -21,7 +21,7 @@ func ParseArgs() bool {
 	Version = vseions
 	config.InitConfig(*ConfigPath)
 	if(*Version){
-		fmt.Println("0.0.1")
+		fmt.Println(config.Conf().Version)
 		return true
 	}
 	return false

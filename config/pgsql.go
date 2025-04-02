@@ -11,6 +11,7 @@ type PgsqlConfig struct {
 	Sslrootcert string `yaml:"sslrootcert"`
 	Sslkey      string `yaml:"sslkey   "`
 	Sslcert     string `yaml:"sslcert  "`
+	Primary     bool   `yaml:"primary  "`
 }
 
 func (c *PgsqlConfig) GetHost() string {
