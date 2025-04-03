@@ -1,42 +1,48 @@
 package config
 
 import (
-	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/config"
+	"sync"
+
+
 
 	"github.com/spf13/viper"
 )
 
-var appConfig config.AppConfig
+var appConfig AppConfig
 var configReader *viper.Viper
 
-func Conf() *config.AppConfig {
-	// fmt.Printf("config: %v\n", AppConfig)
+// Conf 返回App配置基本对象
+func Conf() *AppConfig {
+
 	return &appConfig
 }
 
-func InitConfig(confPath string) {
-	v := viper.New()
-	configReader = v
-	configReader.SetConfigName("conf")
-	configReader.AddConfigPath(confPath)
-	configReader.SetConfigType("yaml")
-	err := configReader.ReadInConfig()
-	if err != nil {
-		panic(err)
-	}
-	// for _, ak := range v.AllKeys() {
-	// 	fmt.Println(v.Get(ak))
-	// }
-
-	err = configReader.Unmarshal(&appConfig)
-
-	if err != nil {
-		panic(err)
-	}
-
-	// fmt.Printf("config: %v\n", AppConfig)
+// GetConfigReader 返回配置读取器
+func ConfigReader() *viper.Viper {
+	return configReader
 }
 
-func GetExpendConf(key string) any {
-	return configReader.Get(key)
+// InitConfig 初始化配置,
+//
+// 应该在main函数中调用，且要在调用Conf()和GetConfigReader()之前执行,只执行一次。
+func InitConfig(confPath,confName,confType string) {
+	sync.OnceFunc(func() {
+		v := viper.New()
+		configReader = v
+		configReader.SetConfigName(confName)
+		configReader.AddConfigPath(confPath)
+		configReader.SetConfigType(confType)
+		err := configReader.ReadInConfig()
+		if err != nil {
+			panic(err)
+		}
+		err = configReader.Unmarshal(&appConfig)
+	
+		if err != nil {
+			panic(err)
+		}
+	})
+	
 }
+
+

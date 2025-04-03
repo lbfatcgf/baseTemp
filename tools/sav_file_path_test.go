@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/tools"
+	"github.com/lbfatcgf/baseTemp/tools"
 )
 
 func TestSaveFilePath(t *testing.T) {

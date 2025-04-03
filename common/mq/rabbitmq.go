@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/config"
-	logger "codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/logger"
+	"github.com/lbfatcgf/baseTemp/common/config"
+	logger "github.com/lbfatcgf/baseTemp/common/logger"
 
 	rbmq "github.com/rabbitmq/amqp091-go"
 )

@@ -16,16 +16,13 @@ pgsql:
   - host : dev.lbfatcgf.top 
     user : postgres 
     password : 123456 
-    dbname : zga
+    dbname : dbname 
     port : 5432 
     sslmode : disable 
     timeZone : Asia/Shanghai
     primary: true # 主库
-
+    other: "xxxx=xxxxx yyyy=yyyyy zzzz=zzzzz"
 
 # log_dir: /app/logs
 # log_dir: D:/mytemp/logs
 # log_dir: C:\Users\lbfatcgf\work\code\temp\logs
-
-fuk: 
-  - name: fuk1

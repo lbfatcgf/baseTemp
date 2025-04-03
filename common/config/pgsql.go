@@ -14,8 +14,10 @@ type PgsqlConfig struct {
 	Sslkey      string `yaml:"sslkey   "`
 	Sslcert     string `yaml:"sslcert  "`
 	Primary     bool   `yaml:"primary  "`
+	Other       *string `yaml:"other"`
 }
 
+// GetHost 返回pgsql连接串，对特殊字符进行转义
 func (c *PgsqlConfig) GetHost() string {
 	qulr := "host=" + c.Host + " " +
 		"port=" + c.Port + " " +
@@ -28,6 +30,9 @@ func (c *PgsqlConfig) GetHost() string {
 		qulr += " sslrootcert=" + c.Sslrootcert + " " +
 			"sslkey=" + c.Sslkey + " " +
 			"sslcert=" + c.Sslcert
+	}
+	if c.Other!= nil || len(*c.Other)<=0{
+		qulr += " " + *c.Other
 	}
 	return url.QueryEscape(qulr)
 }

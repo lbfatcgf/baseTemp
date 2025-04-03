@@ -3,8 +3,8 @@ package logger
 import (
 	"fmt"
 
-	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/config"
-	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/tools"
+	"github.com/lbfatcgf/baseTemp/common/config"
+	"github.com/lbfatcgf/baseTemp/tools"
 
 	"log/slog"
 	"os"
