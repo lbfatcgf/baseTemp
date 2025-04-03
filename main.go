@@ -51,6 +51,7 @@ func main() {
 	})
 	listenerSignal()
 	router.Run(":" + *cmd.Port)
+	
 }
 
 func listenerSignal() {
@@ -62,4 +63,13 @@ func listenerSignal() {
 		mq.CloseRabbitMQ()
 		os.Exit(0)
 	}()
+}
+func MigrateTable() ( ) {
+	if !config.Conf().InitTable {
+		return
+	}
+	err := db.DB().AutoMigrate()
+	if err != nil {
+		panic(err.Error())
+	}
 }

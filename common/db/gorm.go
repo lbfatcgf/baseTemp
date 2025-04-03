@@ -56,12 +56,3 @@ func Initgorm() {
 	})
 }
 
-func MigrateTable() {
-	if !config.Conf().InitTable {
-		return
-	}
-	err := db.AutoMigrate()
-	if err != nil {
-		panic(err.Error())
-	}
-}
