@@ -1,11 +1,12 @@
 package db
 
 import (
-	"baseTemp/common/config"
 	"time"
-	"gorm.io/plugin/dbresolver"
+
+	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/plugin/dbresolver"
 )
 
 var db *gorm.DB
@@ -55,4 +56,3 @@ func Initgorm() {
 		},
 	})
 }
-

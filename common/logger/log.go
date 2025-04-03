@@ -1,9 +1,10 @@
 package logger
 
 import (
-	"baseTemp/common/config"
-	"baseTemp/tools"
 	"fmt"
+
+	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/config"
+	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/tools"
 
 	"log/slog"
 	"os"
@@ -26,33 +27,33 @@ type logMsg struct {
 }
 
 func LogInfo(msg string, arg ...any) {
-	if(cmdLogger!= nil){
+	if cmdLogger != nil {
 		cmdLogger.Info(msg, arg...)
 	}
 	logMsgChan <- &logMsg{Level: slog.LevelInfo, Message: msg, arg: arg}
 }
 
 func LogError(msg string, arg ...any) {
-	if(cmdLogger!= nil){
+	if cmdLogger != nil {
 		cmdLogger.Error(msg, arg...)
 	}
 	logMsgChan <- &logMsg{Level: slog.LevelError, Message: msg, arg: arg}
 }
 
 func LogWarn(msg string, arg ...any) {
-	if(cmdLogger!= nil){
+	if cmdLogger != nil {
 		cmdLogger.Warn(msg, arg...)
 	}
 	logMsgChan <- &logMsg{Level: slog.LevelWarn, Message: msg, arg: arg}
 }
 func LogDebug(msg string, arg ...any) {
-	if(cmdLogger!= nil){
+	if cmdLogger != nil {
 		cmdLogger.Debug(msg, arg...)
 	}
 	logMsgChan <- &logMsg{Level: slog.LevelDebug, Message: msg, arg: arg}
 }
 func InitLog(mode string) {
-	
+
 	logMsgChan = make(chan *logMsg, 1000)
 	logdir := config.Conf().LogDir
 	if len(logdir) == 0 {
@@ -127,6 +128,6 @@ func checkLogFileName() {
 			Level: slog.LevelInfo,
 		})
 		logger = slog.New(logHandler)
-		
+
 	}
 }

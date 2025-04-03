@@ -1,7 +1,7 @@
 package config
 
 import (
-	"baseTemp/config"
+	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/config"
 
 	"github.com/spf13/viper"
 )

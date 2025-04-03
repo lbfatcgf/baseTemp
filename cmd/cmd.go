@@ -1,15 +1,15 @@
 package cmd
 
 import (
-	"baseTemp/common/config"
 	"flag"
 	"fmt"
+
+	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/config"
 )
 
 var ConfigPath *string
 var Port *string
 var Version *bool
-
 
 func ParseArgs() bool {
 	configPath := flag.String("conf", "./conf", "config file directory")
@@ -20,7 +20,7 @@ func ParseArgs() bool {
 	Port = port
 	Version = vseions
 	config.InitConfig(*ConfigPath)
-	if(*Version){
+	if *Version {
 		fmt.Println(config.Conf().Version)
 		return true
 	}

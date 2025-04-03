@@ -1,23 +1,22 @@
 package main
 
 import (
-	"baseTemp/cmd"
-	"baseTemp/common/config"
-	"baseTemp/common/db"
-	logger "baseTemp/common/logger"
-	"baseTemp/common/mq"
-	"baseTemp/service"
-	"baseTemp/tools"
 	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/cmd"
+	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/config"
+	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/db"
+	logger "codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/logger"
+	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/mq"
+	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/tools"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
-
 
 func main() {
 	time.LoadLocation("Asia/Shanghai")
@@ -35,7 +34,7 @@ func main() {
 	mq.InitRabbitMQ()
 	defer mq.CloseRabbitMQ()
 	db.Initgorm()
-	db.MigrateTable()
+
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"}, // 允许所有源
@@ -44,14 +43,13 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
-	service.InitChiTongDaService(router)
 
 	tools.AddOnStopSignal(func() {
 		fmt.Println("stop")
 	})
 	listenerSignal()
 	router.Run(":" + *cmd.Port)
-	
+
 }
 
 func listenerSignal() {
@@ -64,7 +62,7 @@ func listenerSignal() {
 		os.Exit(0)
 	}()
 }
-func MigrateTable() ( ) {
+func MigrateTable() {
 	if !config.Conf().InitTable {
 		return
 	}

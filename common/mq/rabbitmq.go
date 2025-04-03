@@ -1,10 +1,11 @@
 package mq
 
 import (
-	"baseTemp/common/config"
-	logger "baseTemp/common/logger"
 	"context"
 	"fmt"
+
+	"codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/config"
+	logger "codeup.aliyun.com/67c7c688484ca2f0a13acc04/baseTemp/common/logger"
 
 	rbmq "github.com/rabbitmq/amqp091-go"
 )
@@ -83,7 +84,6 @@ func CloseRabbitMQ() {
 	}
 }
 
-
 // SetRouteQueueDefault 设置默认队列绑定关系
 func SetRouteQueueDefault(exchange, routingKey, queueName string) error {
 	return SetRouteQueue(exchange, routingKey, queueName, true, false, false, false, nil)
@@ -100,12 +100,12 @@ func SetRouteQueue(exchange, routingKey, queueName string, durable bool, autoDel
 		break
 	}
 	_, err := channel.QueueDeclare(
-		queueName, // Queue 名称
-		durable,   // 是否持久化
+		queueName,  // Queue 名称
+		durable,    // 是否持久化
 		autoDelete, // 是否自动删除
-		exclusive, // 是否排他
-		noWait,    // 是否不等待服务器响应
-		args,      // 其他参数
+		exclusive,  // 是否排他
+		noWait,     // 是否不等待服务器响应
+		args,       // 其他参数
 	)
 	if err != nil {
 
@@ -126,6 +126,7 @@ func SetRouteQueue(exchange, routingKey, queueName string, durable bool, autoDel
 	}
 	return nil
 }
+
 // NextChannel 获取下一个channel
 func NextChannel() (*rbmq.Channel, error) {
 	if len(channelNames) != len(rabbitMq) || len(channelNames) != len(sendChannel) {
@@ -242,8 +243,8 @@ func ConsumeMsg(ctx context.Context, queue string, consumer string, autoAck bool
 				logger.LogDebug("RabbitMQ consume error: %v", err)
 				continue
 			}
-			if config.Conf().Mode !="release"{
-				logger.LogDebug("RabbitMQ consume msg: %v",channelNames[currentChannel])
+			if config.Conf().Mode != "release" {
+				logger.LogDebug("RabbitMQ consume msg: %v", channelNames[currentChannel])
 			}
 			for {
 				if qch[queue] == nil {
@@ -252,7 +253,7 @@ func ConsumeMsg(ctx context.Context, queue string, consumer string, autoAck bool
 				}
 				m, ok := <-msg
 				if !ok {
-					if config.Conf().Mode !="release"{
+					if config.Conf().Mode != "release" {
 						logger.LogDebug("RabbitMQ consume channel closed")
 					}
 					break
