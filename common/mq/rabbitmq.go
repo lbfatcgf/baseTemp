@@ -84,8 +84,13 @@ func CloseRabbitMQ() {
 }
 
 
+// SetRouteQueueDefault 设置默认队列绑定关系
+func SetRouteQueueDefault(exchange, routingKey, queueName string) error {
+	return SetRouteQueue(exchange, routingKey, queueName, true, false, false, false, nil)
+}
+
 // SetRouteQueue 设置队列绑定关系
-func SetRouteQueue(exchange, routingKey, queueName string) error {
+func SetRouteQueue(exchange, routingKey, queueName string, durable bool, autoDelete bool, exclusive bool, noWait bool, args rbmq.Table) error {
 	var channel *rbmq.Channel
 	for _, sc := range sendChannel {
 		if sc.IsClosed() {
@@ -96,11 +101,11 @@ func SetRouteQueue(exchange, routingKey, queueName string) error {
 	}
 	_, err := channel.QueueDeclare(
 		queueName, // Queue 名称
-		true,      // 持久化
-		false,     // 自动删除
-		false,     // 不等待服务器响应
-		false,     // 无额外参数
-		nil,
+		durable,   // 是否持久化
+		autoDelete, // 是否自动删除
+		exclusive, // 是否排他
+		noWait,    // 是否不等待服务器响应
+		args,      // 其他参数
 	)
 	if err != nil {
 
@@ -121,7 +126,6 @@ func SetRouteQueue(exchange, routingKey, queueName string) error {
 	}
 	return nil
 }
-
 // NextChannel 获取下一个channel
 func NextChannel() (*rbmq.Channel, error) {
 	if len(channelNames) != len(rabbitMq) || len(channelNames) != len(sendChannel) {

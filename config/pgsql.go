@@ -1,5 +1,7 @@
 package config
 
+import "net/url"
+
 type PgsqlConfig struct {
 	Host        string `yaml:"host     "`
 	User        string `yaml:"user     "`
@@ -27,5 +29,5 @@ func (c *PgsqlConfig) GetHost() string {
 			"sslkey=" + c.Sslkey + " " +
 			"sslcert=" + c.Sslcert
 	}
-	return qulr
+	return url.QueryEscape(qulr)
 }
