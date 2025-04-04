@@ -21,9 +21,9 @@ type PgsqlConfig struct {
 func (c *PgsqlConfig) GetHost() string {
 	qulr := "host=" + c.Host + " " +
 		"port=" + c.Port + " " +
-		"user=" + c.User + " " +
-		"password=" + c.Password + " " +
-		"dbname=" + c.Dbname + " " +
+		"user=" + url.QueryEscape(c.User) + " " +
+		"password=" + url.QueryEscape(c.Password) + " " +
+		"dbname=" + url.QueryEscape(c.Dbname) + " " +
 		"sslmode=" + c.Sslmode + " " +
 		"TimeZone=" + c.TimeZone
 	if c.Sslmode != "disable" {
@@ -34,5 +34,5 @@ func (c *PgsqlConfig) GetHost() string {
 	if c.Other!= nil || len(*c.Other)<=0{
 		qulr += " " + *c.Other
 	}
-	return url.QueryEscape(qulr)
+	return qulr
 }

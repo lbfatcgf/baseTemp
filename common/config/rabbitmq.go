@@ -9,5 +9,5 @@ type RabbitMQConfig struct {
 }
 
 func (c *RabbitMQConfig) GetLink() string {
-	return url.QueryEscape("amqp://" + c.User + ":" + c.Password + "@" + c.Host)
+	return "amqp://" + url.QueryEscape(c.User) + ":" + url.QueryEscape(c.Password) + "@" + c.Host
 }
