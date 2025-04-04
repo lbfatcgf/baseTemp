@@ -3,17 +3,17 @@ package config
 import "net/url"
 
 type PgsqlConfig struct {
-	Host        string `yaml:"host     "`
-	User        string `yaml:"user     "`
-	Password    string `yaml:"password "`
-	Dbname      string `yaml:"dbname   "`
-	Port        string `yaml:"port     "`
-	Sslmode     string `yaml:"sslmode  "`
-	TimeZone    string `yaml:"TimeZone "`
-	Sslrootcert string `yaml:"sslrootcert"`
-	Sslkey      string `yaml:"sslkey   "`
-	Sslcert     string `yaml:"sslcert  "`
-	Primary     bool   `yaml:"primary  "`
+	Host        string  `yaml:"host     "`
+	User        string  `yaml:"user     "`
+	Password    string  `yaml:"password "`
+	Dbname      string  `yaml:"dbname   "`
+	Port        string  `yaml:"port     "`
+	Sslmode     string  `yaml:"sslmode  "`
+	TimeZone    string  `yaml:"TimeZone "`
+	Sslrootcert string  `yaml:"sslrootcert"`
+	Sslkey      string  `yaml:"sslkey   "`
+	Sslcert     string  `yaml:"sslcert  "`
+	Primary     bool    `yaml:"primary  "`
 	Other       *string `yaml:"other"`
 }
 
@@ -31,7 +31,7 @@ func (c *PgsqlConfig) GetHost() string {
 			"sslkey=" + c.Sslkey + " " +
 			"sslcert=" + c.Sslcert
 	}
-	if c.Other!= nil || len(*c.Other)<=0{
+	if c.Other != nil && len(*c.Other) > 0 {
 		qulr += " " + *c.Other
 	}
 	return qulr

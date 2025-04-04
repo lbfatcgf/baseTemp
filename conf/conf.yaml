@@ -21,7 +21,7 @@ pgsql:
     sslmode : disable 
     timeZone : Asia/Shanghai
     primary: true # 主库
-    other: "xxxx=xxxxx yyyy=yyyyy zzzz=zzzzz"
+    # other: "xxxx=xxxxx yyyy=yyyyy zzzz=zzzzz"
 
 # log_dir: /app/logs
 # log_dir: D:/mytemp/logs
