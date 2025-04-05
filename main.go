@@ -5,6 +5,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/lbfatcgf/baseTemp/common/logger"
 	"github.com/lbfatcgf/baseTemp/common/mq"
 	"github.com/lbfatcgf/baseTemp/tools"
 )
@@ -21,6 +22,7 @@ func listenerSignal() {
 		<-signalChan
 		tools.StopSingalHandler()
 		mq.CloseRabbitMQ()
+		logger.CloseLog()
 		os.Exit(0)
 	}()
 }

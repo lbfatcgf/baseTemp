@@ -3,10 +3,9 @@ package mq
 import (
 	"context"
 	"fmt"
-
+	"slices"
 	"github.com/lbfatcgf/baseTemp/common/config"
 	logger "github.com/lbfatcgf/baseTemp/common/logger"
-
 	rbmq "github.com/rabbitmq/amqp091-go"
 )
 
@@ -129,6 +128,7 @@ func SetRouteQueue(exchange, routingKey, queueName string, durable bool, autoDel
 
 // NextChannel 获取下一个channel
 func NextChannel() (*rbmq.Channel, error) {
+
 	if len(channelNames) != len(rabbitMq) || len(channelNames) != len(sendChannel) {
 
 	}
@@ -151,7 +151,14 @@ func NextChannel() (*rbmq.Channel, error) {
 		} else {
 			delete(sendChannel, channelNames[currentChannel])
 		}
-		channelNames = append(channelNames[:currentChannel], channelNames[currentChannel+1:]...)
+
+		// channelNames = append(channelNames[:currentChannel], channelNames[currentChannel+1:]...)
+		if len(channelNames) > 1 {
+
+			channelNames = slices.Delete(channelNames, currentChannel, currentChannel+1)
+		} else {
+			channelNames = channelNames[:0]
+		}
 		return NextChannel()
 	}
 	next := sendChannel[channelNames[currentChannel]]

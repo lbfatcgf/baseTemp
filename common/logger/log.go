@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/lbfatcgf/baseTemp/common/config"
@@ -18,6 +19,7 @@ var (
 	logMsgChan chan *logMsg
 	logFile    *os.File
 	logdir     string
+	loggers    []*slog.Logger
 )
 
 type logMsg struct {
@@ -26,6 +28,9 @@ type logMsg struct {
 	arg     []any
 }
 
+func AddLogger(l *slog.Logger) {
+	loggers = append(loggers, l)
+}
 func LogInfo(msg string, arg ...any) {
 	if cmdLogger != nil {
 		cmdLogger.Info(msg, arg...)
@@ -91,26 +96,60 @@ func InitLog(mode string) {
 
 }
 
+var cancel func()
+
 func startLog() {
-	go func() {
+	if cancel != nil {
+		return
+	}
+
+	ctx, ccancel := context.WithCancel(context.Background())
+	cancel = ccancel
+	go func(ctx context.Context) {
 		for {
-			msg := <-logMsgChan
-			if msg == nil {
-				continue
+
+			select {
+			case msg := <-logMsgChan:
+				if msg == nil {
+					continue
+				}
+				checkLogFileName()
+				switch msg.Level {
+				case slog.LevelDebug:
+					logger.Debug(msg.Message, msg.arg...)
+					if len(loggers) > 0 {
+						for _, l := range loggers {
+							l.Debug(msg.Message, msg.arg...)
+						}
+					}
+				case slog.LevelInfo:
+					logger.Info(msg.Message, msg.arg...)
+					if len(loggers) > 0 {
+						for _, l := range loggers {
+							l.Info(msg.Message, msg.arg...)
+						}
+					}
+				case slog.LevelError:
+					logger.Error(msg.Message, msg.arg...)
+					if len(loggers) > 0 {
+						for _, l := range loggers {
+							l.Error(msg.Message, msg.arg...)
+						}
+					}
+				case slog.LevelWarn:
+					logger.Warn(msg.Message, msg.arg...)
+					if len(loggers) > 0 {
+						for _, l := range loggers {
+							l.Warn(msg.Message, msg.arg...)
+						}
+					}
+				}
+			case <-ctx.Done():
+				return
 			}
-			checkLogFileName()
-			switch msg.Level {
-			case slog.LevelDebug:
-				logger.Debug(msg.Message, msg.arg...)
-			case slog.LevelInfo:
-				logger.Info(msg.Message, msg.arg...)
-			case slog.LevelError:
-				logger.Error(msg.Message, msg.arg...)
-			case slog.LevelWarn:
-				logger.Warn(msg.Message, msg.arg...)
-			}
+
 		}
-	}()
+	}(ctx)
 }
 
 func checkLogFileName() {
@@ -130,4 +169,11 @@ func checkLogFileName() {
 		logger = slog.New(logHandler)
 
 	}
+}
+
+func CloseLog() {
+	if(cancel != nil){
+		cancel()
+	}
+	logFile.Close()
 }
