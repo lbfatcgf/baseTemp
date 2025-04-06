@@ -1,6 +1,5 @@
 package config
 
-import "net/url"
 
 type PgsqlConfig struct {
 	Host        string  `yaml:"host     "`
@@ -17,13 +16,13 @@ type PgsqlConfig struct {
 	Other       *string `yaml:"other"`
 }
 
-// GetHost 返回pgsql连接串，对特殊字符进行转义
+// GetHost 返回pgsql连接串
 func (c *PgsqlConfig) GetHost() string {
 	qulr := "host=" + c.Host + " " +
 		"port=" + c.Port + " " +
-		"user=" + url.QueryEscape(c.User) + " " +
-		"password=" + url.QueryEscape(c.Password) + " " +
-		"dbname=" + url.QueryEscape(c.Dbname) + " " +
+		"user=" + c.User + " " +
+		"password=" + c.Password + " " +
+		"dbname=" + c.Dbname + " " +
 		"sslmode=" + c.Sslmode + " " +
 		"TimeZone=" + c.TimeZone
 	if c.Sslmode != "disable" {
