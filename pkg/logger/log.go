@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/lbfatcgf/baseTemp/pkg/config"
-	"github.com/lbfatcgf/baseTemp/pkg/tools"
+	"github.com/lbfatcgf/baseTemp/tools"
 
 	"log/slog"
 	"os"
