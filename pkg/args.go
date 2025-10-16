@@ -1,10 +1,10 @@
-package cmd
+package pkg
 
 import (
 	"flag"
 	"fmt"
 
-	"github.com/lbfatcgf/baseTemp/common/config"
+	"github.com/lbfatcgf/baseTemp/pkg/config"
 )
 
 var ConfigPath *string

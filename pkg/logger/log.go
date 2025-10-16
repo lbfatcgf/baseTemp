@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lbfatcgf/baseTemp/common/config"
-	"github.com/lbfatcgf/baseTemp/tools"
+	"github.com/lbfatcgf/baseTemp/pkg/config"
+	"github.com/lbfatcgf/baseTemp/pkg/tools"
 
 	"log/slog"
 	"os"

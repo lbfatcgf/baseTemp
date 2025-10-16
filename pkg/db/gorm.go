@@ -3,7 +3,7 @@ package db
 import (
 	"time"
 
-	"github.com/lbfatcgf/baseTemp/common/config"
+	"github.com/lbfatcgf/baseTemp/pkg/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/plugin/dbresolver"

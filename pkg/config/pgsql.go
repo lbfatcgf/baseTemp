@@ -1,6 +1,5 @@
 package config
 
-
 type PgsqlConfig struct {
 	Host        string  `yaml:"host     "`
 	User        string  `yaml:"user     "`

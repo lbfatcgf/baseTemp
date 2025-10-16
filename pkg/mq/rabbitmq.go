@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 	"slices"
-	"github.com/lbfatcgf/baseTemp/common/config"
-	logger "github.com/lbfatcgf/baseTemp/common/logger"
+
+	"github.com/lbfatcgf/baseTemp/pkg/config"
+	"github.com/lbfatcgf/baseTemp/pkg/logger"
 	rbmq "github.com/rabbitmq/amqp091-go"
 )
 
