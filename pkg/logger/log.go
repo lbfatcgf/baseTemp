@@ -153,7 +153,7 @@ func startLog() {
 }
 
 func checkLogFileName() {
-	// logdir := config.Conf().LogDir
+	logdir := config.Conf().LogDir
 	newFilePtah := fp.Join(logdir, tools.SafeFilePath(config.Conf().Name+"-"+time.Now().Format("2006-01-02")+".log"))
 	if newFilePtah != logFile.Name() {
 		logFile.Close()
